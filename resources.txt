@@ -1,0 +1,12 @@
+embeddings_file|||/export/data/carolina/stanceclassification/resources/glove.twitter.27B.200d.txt
+embeddings_size|||200
+emoticon|||/export/data/carolina/stanceclassification/resources/emoticon/emoticonsDic.txt
+acronyms|||/export/data/carolina/stanceclassification/resources/linguisticFeatures/acronyms_cleaned.txt
+affect_surprise|||/export/data/carolina/stanceclassification/resources/linguisticFeatures/affect_surprise.lst
+doubt_words|||/export/data/carolina/stanceclassification/resources/linguisticFeatures/doubtWords.txt
+google_bad_words|||/export/data/carolina/stanceclassification/resources/linguisticFeatures/googleOfficialBadWords.txt
+no_doubt_words|||/export/data/carolina/stanceclassification/resources/linguisticFeatures/noDoubtWords.txt
+vulgar_words|||/export/data/carolina/stanceclassification/resources/linguisticFeatures/vulgarWordsDic.txt
+model_lr|||/export/data/carolina/stanceclassification/StanceClassifierPy/models/lr.model
+model_rf|||/export/data/carolina/stanceclassification/StanceClassifierPy/models/rf.model
+model_svm|||/export/data/carolina/stanceclassification/StanceClassifierPy/models/svm.model
