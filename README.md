@@ -6,6 +6,7 @@ This is a re-implementation of Aker et al. (2017) ["Simple Open Stance Classific
 ## Configuration
 1) Requirements:
 
+        python3.7
         nltk
         numpy
         scipy
