@@ -23,7 +23,7 @@ This is a re-implementation of Aker et al. (2017) ["Simple Open Stance Classific
 ```
 python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
 ```
-    Supports languages: en
+    Supported languages: en
     Supported models: 
         rf (Random Forest)
         mlp (Multi-layer perceptron)
