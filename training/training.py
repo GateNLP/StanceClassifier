@@ -22,17 +22,19 @@ from sklearn.metrics import confusion_matrix, precision_score, f1_score, accurac
 import json
 import glob
 from preprocesstwitter import PreprocessTwitter
-sys.path[0:0] = ["../features/"]
+sys.path[0:0] = ["features/"]
 from extract_features import Features
-sys.path[0:0] = ["../util/"]
+sys.path[0:0] = ["util/"]
 from util import Util
 
+### DEPRECATED ###
 GLOVE_SIZE = 300
 TWITTER_SIZE = 200
 EMB_TWITTER = True
 EMB_FILE = "/export/data/carolina/stanceclassification/resources/glove.840B.300d.txt"
 EMB_TWITTER_FILE = "/export/data/carolina/stanceclassification/resources/glove.twitter.27B.200d.txt"
 BINARY = False
+### (END) DEPRECATED ###
 
 def new_features(l_file, dataset, feature_extractor):
     print("Extracting features")
@@ -56,18 +58,6 @@ def new_features(l_file, dataset, feature_extractor):
     print("Done.")
     return np.array(featset), np.array(labels), ids
 
-def loadGloveModel(gloveFile):
-    print("Loading Glove Model")
-    f = open(gloveFile,'r')
-    model = {}
-    for line in f:
-        splitLine = line.split(" ")
-        #print(splitLine)
-        word = splitLine[0]
-        embedding = np.array([float(val) for val in splitLine[1:]])
-        model[word] = embedding
-    print("Done.",len(model)," words loaded!")
-    return model
 
 def open_json(f):
     with open(f) as json_file:
@@ -99,6 +89,11 @@ def new_load_folder(folder):
     print("Done.",len(dataset.keys())," files loaded!")
     return dataset
 
+
+#### DEPRECATED FUNCTIONS #####
+#### LEFT ONLY FOR REFERENCE ####
+#### THEY WILL BE REMOVED IN THE NEXT VERSION ####
+
 def load_folder(folder):
     folders = glob.glob(folder + "/*/*")
     dataset = {}
@@ -125,24 +120,6 @@ def load_folder(folder):
             dataset[r_id].append(st_id)
     print("Done.",len(dataset.keys())," files loaded!")
     return dataset
-
-
-        #TODO: implement Ahmet's features
-        ###has url? 
-        #url = 0
-        #if "http" in st_text:
-        #    url = 1
-
-        ###ends with question mark
-        #ewqm = 0
-        #if st_text[-1] == "?":
-        #    ewqm = 1
-
-        ###is reply?
-        #reply = 0
-        #if st_id != ct_id:
-        #    reply = 1
-
 
 
 def tweet_vector(words, glove):
@@ -210,61 +187,29 @@ def features(l_file, dataset, glove, hc, ids_hc):
     print("Done.")
     return np.array(featset), np.array(labels)
     
-
+#### (END) DEPRECATED FUNCTIONS #####
 
 
 def train(model, X, y, name):
     print("Training model: " + model)
-    if model == "ens_simp":
-
+    if model == "ens":
         clf1 = LogisticRegression(solver="saga", class_weight="balanced")
-        clf2 = SVC(kernel='rbf', probability=True)
-        clf3 = RandomForestClassifier()
-        clf4 = GaussianNB()
-        clf5 = MLPClassifier(max_iter=1000)
-        clf6 = GaussianProcessClassifier(1.0 * RBF(1.0))
-        eclf = VotingClassifier(estimators=[('lr', clf1), ('svc', clf2), ('rf', clf3), ('gnb', clf4), ('mlp', clf5), ('gp', clf6)], voting='soft')
+        clf2 = RandomForestClassifier()
+        clf3 = MLPClassifier(max_iter=1000)
+        eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('mlp', clf3)], voting='soft')
         params = {'lr__C': [1e0, 1e1, 1e2, 1e3],
                   'lr__tol': [1e-1,1e-2,1e-3,1e-4,1e-5,1e-6],
                   'lr__multi_class': ["ovr", "multinomial"],
                   'lr__penalty': ["l1", "l2", "elasticnet"],
                   'lr__l1_ratio': [0.0, 0.0001, 0.001, 0.005, 0.05, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0], 
-                  'mlp__alpha': [1e-3,1e-4,1e-5],
-                  #'lr__tol': [1e-1,1e-2,1e-3],
-                  #'lr__multi_class': ["ovr", "multinomial"],
-                  #'lr__penalty': ["l1", "l2", "elasticnet"],
-                  #'lr__l1_ratio': [0.0, 0.0001, 0.001, 0.005, 0.05, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0],
                   'rf__n_estimators': [400, 600, 800],
-                  #'rf__min_samples_split': [5,10],
-                  #'rf__min_samples_leaf': [1,2,4],
-                  #'rf__max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
-                  'svc__C': [1e0, 1e1, 1e2],
-                  #'svc__tol': [1e-1,1e-2,1e-3,1e-4,1e-5,1e-6],
-                  'svc__gamma': np.logspace(-2, 2, 5)}
+                  'mlp__solver':["sgd", "adam", "lbfgs"],
+                  'mlp__activation' : ["identity", "logistic", "tanh", "relu"],
+                  'mlp__alpha': [0.0, 0.0001, 0.001, 0.005, 0.05, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0],
+                  'mlp__tol': [1e-1,1e-2,1e-3,1e-4,1e-5,1e-6]
+                  }
         clf = GridSearchCV(estimator=eclf, param_grid=params, cv=5, n_jobs=10)
-        #clf = GridSearchCV(estimator=eclf, cv=5, n_jobs=20)
     
-    if model == "ens":
-
-        clf1 = LogisticRegression(solver="saga", class_weight="balanced")
-        clf2 = SVC(kernel='rbf', probability=True)
-        clf3 = RandomForestClassifier()
-        clf4 = GaussianNB()
-        eclf = VotingClassifier(estimators=[('lr', clf1), ('svc', clf2), ('rf', clf3), ('gnb', clf4)], voting='soft')
-        params = {'lr__C': [1e0, 1e1, 1e2, 1e3], 
-                  'lr__tol': [1e-1,1e-2,1e-3,1e-4,1e-5,1e-6],
-                  'lr__multi_class': ["ovr", "multinomial"],
-                  'lr__penalty': ["l1", "l2", "elasticnet"],
-                  'lr__l1_ratio': [0.0, 0.0001, 0.001, 0.005, 0.05, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0],
-                  'rf__n_estimators': [20, 200, 400, 600, 800, 1000, 1200, 1400],
-                  'rf__min_samples_split': [2,5,10],
-                  'rf__min_samples_leaf': [1,2,4],
-                  'rf__max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
-                  'svc__C': [1e0, 1e1, 1e2, 1e3],
-                  'svc__tol': [1e-1,1e-2,1e-3,1e-4,1e-5,1e-6],
-                  'svc__gamma': np.logspace(-2, 2, 5)}
-        clf = GridSearchCV(estimator=eclf, param_grid=params, cv=5, n_jobs=5)
-
     if model == "gp":
         clf = GaussianProcessClassifier(1.0 * RBF(1.0))
 
@@ -277,12 +222,6 @@ def train(model, X, y, name):
                     }, n_jobs=10)
 
     if model == "rf":
-        #clf = GridSearchCV(cv=5, estimator=RandomForestClassifier(), param_grid={'bootstrap': [True, False],
-        #        'max_depth': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, None],
-        #        'max_features': ['auto', 'sqrt'],
-        #        'min_samples_leaf': [1, 2, 4],
-        #        'min_samples_split': [2, 5, 10],
-        #        'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]}, n_jobs=10)
         clf = RandomForestClassifier(n_estimators=500)
 
     if model == "svm":
@@ -291,11 +230,9 @@ def train(model, X, y, name):
 
     if model == "lr":
         clf = GridSearchCV(cv=5, estimator=LogisticRegression(solver="saga", class_weight="balanced"), param_grid={
-                                #"solver": ["newton-cg", "sag", "saga", "lbfgs"],
                                 "tol":[1e-1,1e-2,1e-3,1e-4,1e-5,1e-6], 
                                 "C": [1e0, 1e1, 1e2, 1e3], 
                                 "multi_class": ["ovr", "multinomial"],
-                                #"penalty": ["l2"]}, n_jobs=10)
                                 "penalty": ["l1", "l2", "elasticnet"], 
                                 "l1_ratio": [0.0, 0.0001, 0.001, 0.005, 0.05, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]}, n_jobs=10)
 
@@ -349,8 +286,7 @@ def save_json(model, y_pred, ids):
 #Load resources:
 print("Loading resources")
 util = Util()
-resources = util.loadResources('../resources.txt')
-#configurations = loadResources('../configurations.txt')
+resources = util.loadResources('resources.txt')
 print("Done. %d resources added!" % len(resources.keys()))
 
 
@@ -375,7 +311,7 @@ test_dict = open_json("/export/data/carolina/rumoureval/2017/subtaskA/test_data/
 #ids_hc = np.loadtxt("/export/data/carolina/stanceclassification/semEvalFeatures.csv" , skiprows=1, usecols=(6426), dtype=str)
 #ids_test_hc = np.loadtxt("/export/data/carolina/stanceclassification/semEvalFeaturesTesting.csv" , skiprows=1, usecols=(6426), dtype=str)
 
-#### DEPRECATED ####
+#### (END) DEPRECATED ####
 
 
 dataset = new_load_folder("/export/data/carolina/rumoureval/2017/semeval2017-task8-dataset/rumoureval-data/")
@@ -391,6 +327,8 @@ X_test, y_test, ids_test = new_features(test_dict, dataset, feature_extractor)
 #### DEPRECATED ####
 #X, y = features(train_dict, dataset, glove, X_hc, ids_hc)
 #X_test, y_test = features(test_dict, dataset, glove, X_test_hc, ids_test_hc)
+#### (END) DEPRECATED ####
+
 
 scaler = StandardScaler()
 scaler.fit(X)
@@ -399,23 +337,22 @@ X_scl = scaler.transform(X)
 #X_scl = X
 
 X_test_scl = scaler.transform(X_test)
-
 #X_test_scl = X_test
-
-#### DEPRECATED ####
-
 
 
 #choose classifier
-model = "mlp"
-if EMB_TWITTER:
-    name = model + "_" + feature_type + "_esize" + str(TWITTER_SIZE)
-else:
-    name = model + "_" + feature_type + "_esize" + str(GLOVE_SIZE) + "_glove"
+model = "rf"
+folder = "training/models/"
+name = folder + model + "_" + feature_type + "_esize" + resources['embeddings_size']
+
+#train model
 clf = train(model, X_scl, y, name)
+
+#predict
 y_pred = test(clf, X_test_scl)
 
-
+#evaluation
 evaluation(y_test, y_pred, name)
 
+#save in the RumourEval format
 save_json(name, y_pred, ids_test)
