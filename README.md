@@ -1,7 +1,7 @@
 # StanceClassifier
 Stance Classifier for the WeVerify project
 
-This is a re-implementation of Aker et al. (2017) "Simple Open Stance Classification for Rumour Analysis" (LINK[https://arxiv.org/pdf/1708.05286.pdf]). We replaced the Bag-of-words and BROWN features with GloVe[https://nlp.stanford.edu/projects/glove/] embeddings (twitter embeddings with 200 dimensions). 
+This is a re-implementation of Aker et al. (2017) ["Simple Open Stance Classification for Rumour Analysis"](https://arxiv.org/pdf/1708.05286.pdf). We replaced the Bag-of-words and BROWN features with [GloVe embeddings](https://nlp.stanford.edu/projects/glove/) (twitter embeddings with 200 dimensions). 
 
 ## Configuration
     1) Requirements:
@@ -15,7 +15,7 @@ This is a re-implementation of Aker et al. (2017) "Simple Open Stance Classifica
 
     2) Clone this repository
 
-    3) Download the resources[http://staffwww.dcs.shef.ac.uk/people/C.Scarton/resources.tar.gz] required for feature extraction and extract it inside the main folder (`StanceClassifer`)
+    3) Download the [resources](http://staffwww.dcs.shef.ac.uk/people/C.Scarton/resources.tar.gz) required for feature extraction and extract it inside the main folder (`StanceClassifer`)
 
 ## Usage
 
