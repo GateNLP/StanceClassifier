@@ -44,3 +44,30 @@ python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
 ### `StanceClassifer` class
 This is the main class in this project. If you want to add this project as part of your own project, you should import this class. 
 
+### Server usage
+We have implemented TCP and HTTP servers. Server parameters are defined in the `configurations.txt` file.
+
+To run the TCP server:
+```
+python server/Run_TCP_StanceClassifier_Server.py
+```
+
+Testing the TCP server:
+```
+python server/Test_Run_TCP_StanceClassifier_Server.py
+```
+
+The HTTP server uses a TCP server already running:
+```
+python server/Run_HTTP_StanceClassifier_Server.py
+```
+
+To test the HTTP server:
+```
+python server/Test_Run_HTTP_StanceClassifier_Server.py
+```
+
+### Training new models
+To train new models, you can edit `training/training.py` (more support will be given in the future). To run:
+```
+python training/training.py
