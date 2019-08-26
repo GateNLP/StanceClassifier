@@ -24,7 +24,11 @@ This is a re-implementation of Aker et al. (2017) ["Simple Open Stance Classific
 python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
 ```
     Supports languages: en
-    Supported models: rf (Random Forest), mlp (Multi-layer perceptron), lr (Logistic Regression), svm (Support Vector Machines)
+    Supported models: 
+        rf (Random Forest)
+        mlp (Multi-layer perceptron)
+        lr (Logistic Regression)
+        svm (Support Vector Machines)
 
     The output is a class:
         0.0 = support
@@ -37,5 +41,5 @@ python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
     The folder `examples` contains a source and reply example.
 
 ### `StanceClassifer` class
-    This is the main class in this project. If you want to add this project as part of your own project, you should import this class. 
+This is the main class in this project. If you want to add this project as part of your own project, you should import this class. 
 
