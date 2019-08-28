@@ -28,39 +28,43 @@ print("Bound to " + hostname + ":" + str(port) + ". Listening for connections")
 
 #Upon receival of classification request, do:
 while 1:
-    
-    #Open connection:
-    (conn, address) = serversocket.accept()
 
-    print("*** Incoming connection from " + str(address))
+    try: 
+        #Open connection:
+        (conn, address) = serversocket.accept()
 
-    print('*** Receiving data in batches of 4096 bytes...')
-    bs = conn.recv(8)
-    (length,) = unpack('>Q', bs)
-    print('*** Data length (bytes): ' + str(length))
-    data = b''
-    c = 1
-    while len(data) < length:
-        #print('Receiving batch %d ...' % c)
-        to_read = length - len(data)
-        data += conn.recv(4096 if to_read > 4096 else to_read)
-        c += 1
-    assert len(b'\00') == 1
-    conn.sendall(b'\00')
+        print("*** Incoming connection from " + str(address))
 
-    source = json.loads(data)['source']
-    reply = json.loads(data)['reply']
+        print('*** Receiving data in batches of 4096 bytes...')
+        bs = conn.recv(8)
+        (length,) = unpack('>Q', bs)
+        print('*** Data length (bytes): ' + str(length))
+        data = b''
+        c = 1
+        while len(data) < length:
+            #print('Receiving batch %d ...' % c)
+            to_read = length - len(data)
+            data += conn.recv(4096 if to_read > 4096 else to_read)
+            c += 1
+        assert len(b'\00') == 1
+        conn.sendall(b'\00')
 
-    output = stance_classifier.classify(source, reply)
+        source = json.loads(data)['original']
+        reply = json.loads(data)['reply']
 
-    data = {}
-    data['class'] = output[0]
-    data['probs'] = {}
-    for i in range(0, len(output[1])):
-        data['probs'][i] = output[1][i]
+        output = stance_classifier.classify(source, reply)
 
-    print("Sending... " + str(data))
-    conn.send(json.dumps(data).encode('utf-8'))
-    conn.close()
+        data = {}
+        data['class'] = output[0]
+        data['probs'] = {}
+        for i in range(0, len(output[1])):
+            data['probs'][i] = output[1][i]
+
+        print("Sending... " + str(data))
+        conn.send(json.dumps(data).encode('utf-8'))
+        conn.close()
+    except Exception as ex:
+        print(ex)
+
 
 

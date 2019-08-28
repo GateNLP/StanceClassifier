@@ -3,7 +3,7 @@ import json
 
 
 info = {}
-info['source'] = json.load(open("examples/source"))
+info['original'] = json.load(open("examples/source"))
 info['reply'] = json.load(open("examples/reply"))
 
 myurl = "http://localhost:7272/"

@@ -14,7 +14,7 @@ source = json.load(open("examples/source"))
 reply = json.load(open("examples/reply"))
 
 info = {}
-info['source'] = source
+info['original'] = source
 info['reply'] = reply
 
 

@@ -18,7 +18,7 @@ class StanceClassifier:
         #Create a classification request for local stance classifier server in json format:
         aux = json.loads(parameters.decode('utf-8'))
         info = {}
-        info['source'] = aux["source"]
+        info['original'] = aux["original"]
         info['reply'] = aux["reply"]
         data = json.dumps(info)
         try:
@@ -60,9 +60,14 @@ class StanceClassifierHandler(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         print(post_data)
-        output_parameters = self.classify(post_data)
-        print(output_parameters)
-        self.respond(output_parameters)
+        parameters = self.parse_parameters(post_data)
+        print(parameters)
+        if 'Error' not in str(parameters):
+            output_parameters = self.classify(parameters)
+            print(output_parameters)
+            self.respond(output_parameters)
+        else:
+            self.respond(parameters)
         return
 
     #Send a classification result back to the requester:
@@ -80,15 +85,10 @@ class StanceClassifierHandler(BaseHTTPRequestHandler):
 
 
     def parse_parameters(self, text):
-        try:
-            parameters = parse_qs(text[2:])
-        except Exception as exc:
-            parameters = {'Error': ['Error while parsing problem.']}
+        parameters = text
 
-        if 'Error' not in parameters:
-            print(parameters)
-            if 'source' not in parameters or 'reply' not in parameters:
-                parameters = {'Error': ['Parameters "source" or "reply" missing']}
+        if '"original":' not in str(text) or '"reply":' not in str(text):
+            parameters = {'Error': ['Parameters "source" or "reply" missing']}
         return parameters
 
 
@@ -102,7 +102,9 @@ try:
     cs = StanceClassifier(LOCAL_SERVER, LOCAL_PORT_NUMBER)
     server = StanceClassifierServer(('', SERVER_PORT_NUMBER), StanceClassifierHandler)
     server.addStanceClassifier(cs)
+    print("Bound to " + LOCAL_SERVER  + ":" + str(SERVER_PORT_NUMBER) + ". Listening for connections")
     server.serve_forever()
+
 
 except KeyboardInterrupt:
     server.socket.close()
