@@ -27,12 +27,6 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 #from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from StanceClassifier.util import *
 
-GLOVE_SIZE = 300
-TWITTER_SIZE = 200
-EMB_TWITTER = True
-EMB_FILE = "/export/data/carolina/stanceclassification/resources/glove.840B.300d.txt"
-EMB_TWITTER_FILE = "/export/data/carolina/stanceclassification/resources/glove.twitter.27B.200d.txt"
-
 
 class Features():
 
@@ -47,6 +41,8 @@ class Features():
         self.surpriseWords = self.read_surprise_words(resources["affect_surprise"])
         self.doubtWords = self.read_doubt_words(resources["doubt_words"])
         self.noDoubtWords = self.read_no_doubt_words(resources["no_doubt_words"])
+
+        self.scaler = load(resources["scaler"])
 
         self.glove = self.loadGloveModel(self.emb_file)
 
@@ -160,11 +156,19 @@ class Features():
         hc = []
         c = 0
 
-        s_text_raw = source["text"].lower()
-        r_text_raw = reply["text"].lower()
 
-        s_text = tokenizer.tokenize(source["text"])
-        r_text = tokenizer.tokenize(reply["text"])
+        if "text" not in source.keys():
+            s_text_raw = source["full_text"].lower()
+        else:
+            s_text_raw = source["text"].lower()
+
+        if "text" not in reply.keys():
+            r_text_raw = reply["full_text"].lower()
+        else:
+            r_text_raw = reply["text"].lower()
+
+        s_text = tokenizer.tokenize(s_text_raw)
+        r_text = tokenizer.tokenize(r_text_raw)
 
         s_id = source["id"]
         r_id = reply["id"]
@@ -451,8 +455,9 @@ class Features():
 
         aux_vector = np.append(s_vector, r_vector)
         final_vector = np.append(aux_vector, hc_vector)
+        
+        final_vector_scaler = self.scaler.transform(final_vector.reshape(1, -1))
 
-
-        return final_vector
+        return final_vector_scaler
     
 

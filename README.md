@@ -40,7 +40,9 @@ python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
 
     and a vector with the probabilities returned for each class.
 
-    The folder `examples` contains a source and reply example.
+    The folder `examples` contains examples of original tweets and replies:
+        original_old and reply_old are examples of the old JSON files (140 characters)
+        original_new and reply_new are examples of the new JSON files (280 characters)
 
 ### `StanceClassifer` class
 This is the main class in this project. If you want to add this project as part of your own project, you should import this class. 

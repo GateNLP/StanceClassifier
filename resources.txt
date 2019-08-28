@@ -7,6 +7,7 @@ doubt_words|||resources/linguisticFeatures/doubtWords.txt
 google_bad_words|||resources/linguisticFeatures/googleOfficialBadWords.txt
 no_doubt_words|||resources/linguisticFeatures/noDoubtWords.txt
 vulgar_words|||resources/linguisticFeatures/vulgarWordsDic.txt
+scaler|||models/scaler
 model_lr|||models/lr.model
 model_rf|||models/rf.model
 model_svm|||models/svm.model

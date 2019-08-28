@@ -90,6 +90,17 @@ def new_load_folder(folder):
     return dataset
 
 
+def build_labels(l_file, l):
+    label = 3.0
+    if l_file[l] == "support":
+        label = 0.0
+    elif l_file[l] == "deny":
+        label = 1.0
+    elif l_file[l] == "query":
+        label = 2.0
+    elif l_file[l] == "comment":
+        label = 3.0
+    return label
 #### DEPRECATED FUNCTIONS #####
 #### LEFT ONLY FOR REFERENCE ####
 #### THEY WILL BE REMOVED IN THE NEXT VERSION ####
@@ -133,17 +144,7 @@ def tweet_vector(words, glove):
     t_vector = t_vector/float(len(words))
     return t_vector
 
-def build_labels(l_file, l):
-    label = 3.0
-    if l_file[l] == "support":
-        label = 0.0
-    elif l_file[l] == "deny":
-        label = 1.0
-    elif l_file[l] == "query":
-        label = 2.0
-    elif l_file[l] == "comment":
-        label = 3.0
-    return label
+
 
 def build_labels_bin(l_file, l):
     label = 0.0
