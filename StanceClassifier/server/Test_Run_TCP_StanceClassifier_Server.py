@@ -2,7 +2,7 @@ import socket, json
 import sys
 from struct import pack
 sys.path[0:0] = ["util/"]
-from util import Util
+from StanceClassifier.util import Util
 
 #Load configurations
 util = Util()

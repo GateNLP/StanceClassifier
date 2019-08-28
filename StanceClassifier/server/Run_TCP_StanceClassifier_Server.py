@@ -3,9 +3,9 @@ import json
 import sys
 from struct import unpack
 sys.path[0:0] = ["."]
-from Stance_Classifier import StanceClassifier
+from StanceClassifier.stance_classifier import StanceClassifier
 sys.path[0:0] = ["util/"]
-from util import Util
+from StanceClassifier.util import Util
 
 #Load configurations
 util = Util()

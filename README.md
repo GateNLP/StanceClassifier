@@ -50,25 +50,25 @@ We have implemented TCP and HTTP servers. Server parameters are defined in the `
 
 To run the TCP server:
 ```
-python server/Run_TCP_StanceClassifier_Server.py
+python StanceClassifier/server/Run_TCP_StanceClassifier_Server.py
 ```
 
 Testing the TCP server:
 ```
-python server/Test_Run_TCP_StanceClassifier_Server.py
+python StanceClassifier/server/Test_Run_TCP_StanceClassifier_Server.py
 ```
 
 The HTTP server uses a TCP server already running:
 ```
-python server/Run_HTTP_StanceClassifier_Server.py
+python StanceClassifier/server/Run_HTTP_StanceClassifier_Server.py
 ```
 
 To test the HTTP server:
 ```
-python server/Test_Run_HTTP_StanceClassifier_Server.py
+python StanceClassifier/server/Test_Run_HTTP_StanceClassifier_Server.py
 ```
 
 ### Training new models
-To train new models, you can edit `training/training.py` (more support will be given in the future). To run:
+To train new models, you can edit `StanceClassifier/training/training.py` (more support will be given in the future). To run:
 ```
 python training/training.py
