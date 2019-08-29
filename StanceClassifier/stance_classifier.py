@@ -5,9 +5,9 @@ from joblib import load
 import numpy as np
 
 from .features.extract_features import Features
-from .util import *
+from .util import Util, path_from_root
 
-RESOURCES_PATH = os.path.join(get_project_root(), "resources.txt")
+RESOURCES_PATH = path_from_root("resources.txt")
 
 class StanceClassifier():
 

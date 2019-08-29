@@ -1,10 +1,11 @@
 import urllib.request
 import json
+from StanceClassifier.util import *
 
 
 info = {}
-info['original'] = json.load(open("examples/source"))
-info['reply'] = json.load(open("examples/reply"))
+info['original'] = json.load(open(path_from_root("examples/source")))
+info['reply'] = json.load(open(path_from_root("examples/reply")))
 
 myurl = "http://localhost:7272/"
 req = urllib.request.Request(myurl)

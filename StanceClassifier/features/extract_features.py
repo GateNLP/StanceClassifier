@@ -25,7 +25,7 @@ from .heuristics import Heuristics
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 #from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from StanceClassifier.util import *
+from StanceClassifier.util import Util, path_from_root
 
 
 class Features():

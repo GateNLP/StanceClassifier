@@ -23,7 +23,7 @@ This is a re-implementation of Aker et al. (2017) ["Simple Open Stance Classific
 
 ### Basic usage
 ```
-python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
+python -m StanceClassifier -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
 ```
     Supported languages: en
     Supported models: 
@@ -52,25 +52,26 @@ We have implemented TCP and HTTP servers. Server parameters are defined in the `
 
 To run the TCP server:
 ```
-python StanceClassifier/server/Run_TCP_StanceClassifier_Server.py
+python Run_TCP_StanceClassifier_Server.py
 ```
 
 Testing the TCP server:
 ```
-python StanceClassifier/server/Test_Run_TCP_StanceClassifier_Server.py
+python Test_Run_TCP_StanceClassifier_Server.py
 ```
 
 The HTTP server uses a TCP server already running:
 ```
-python StanceClassifier/server/Run_HTTP_StanceClassifier_Server.py
+python Run_HTTP_StanceClassifier_Server.py
 ```
 
 To test the HTTP server:
 ```
-python StanceClassifier/server/Test_Run_HTTP_StanceClassifier_Server.py
+python Test_Run_HTTP_StanceClassifier_Server.py
 ```
 
 ### Training new models
-To train new models, you can edit `StanceClassifier/training/training.py` (more support will be given in the future). To run:
+To train new models, you can edit `train_model.py` (more support will be given in the future). To run:
 ```
-python training/training.py
+python train_model.py
+```
