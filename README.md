@@ -44,7 +44,7 @@ python -m StanceClassifier -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <
         original_old and reply_old are examples of the old JSON files (140 characters)
         original_new and reply_new are examples of the new JSON files (280 characters)
 
-### `StanceClassifer` class
+### `StanceClassifer` class (StanceClassifier.stance_classifier.StanceClassifier)
 This is the main class in this project. If you want to add this project as part of your own project, you should import this class. 
 
 ### Server usage
