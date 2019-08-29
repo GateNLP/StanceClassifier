@@ -21,11 +21,9 @@ from joblib import dump, load
 from sklearn.metrics import confusion_matrix, precision_score, f1_score, accuracy_score, recall_score
 import json
 import glob
-from preprocesstwitter import PreprocessTwitter
-sys.path[0:0] = ["features/"]
-from extract_features import Features
-sys.path[0:0] = ["util/"]
-from util import Util
+from StanceClassifier.training.preprocesstwitter import PreprocessTwitter
+from StanceClassifier.features.extract_features import Features
+from StanceClassifier.util import Util
 
 ### DEPRECATED ###
 GLOVE_SIZE = 300

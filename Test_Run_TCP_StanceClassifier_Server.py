@@ -1,17 +1,17 @@
 import socket, json
 import sys
 from struct import pack
-sys.path[0:0] = ["util/"]
-from util import Util
+from StanceClassifier.util import *
+
 
 #Load configurations
 util = Util()
-configurations = util.loadResources('configurations.txt')
+configurations = util.loadResources(path_from_root('configurations.txt'))
 
 
 
-source = json.load(open("examples/source"))
-reply = json.load(open("examples/reply"))
+source = json.load(open(path_from_root("examples/source")))
+reply = json.load(open(path_from_root("examples/reply")))
 
 info = {}
 info['original'] = source
