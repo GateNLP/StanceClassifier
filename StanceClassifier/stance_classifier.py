@@ -22,7 +22,18 @@ class StanceClassifier():
         print("Done. %d resources added!" % len(self.resources.keys()))
         self.feature_extractor = Features(self.resources)
 
-    def classify(self, source, reply): 
+    def classify(self, source, reply):
+        """
+        :param source: JSON dict object source
+        :param reply: JSON dict object reply
+        :return: stance_class, stance_prob
+            stance_class float
+                0.0 = support
+                1.0 = deny
+                2.0 = query
+                3.0 = comment
+            stance_prob [support_prob, deny_prob, query_prob, comment_prob]
+        """
         #Load resources:
         clf = load(path_from_root(self.resources["model_" + self.model]))
         tweet_features = np.array(self.feature_extractor.features(source, reply))

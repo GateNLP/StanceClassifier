@@ -42,7 +42,7 @@ class Features():
         self.doubtWords = self.read_doubt_words(resources["doubt_words"])
         self.noDoubtWords = self.read_no_doubt_words(resources["no_doubt_words"])
 
-        self.scaler = load(resources["scaler"])
+        self.scaler = load(path_from_root(resources["scaler"]))
 
         self.glove = self.loadGloveModel(self.emb_file)
 
