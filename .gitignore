@@ -2,3 +2,4 @@ resources/
 resources.tar.gz
 __pycache__/
 training/models/
+*.pyc
