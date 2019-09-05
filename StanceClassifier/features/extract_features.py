@@ -20,11 +20,12 @@ from joblib import dump, load
 from sklearn.metrics import confusion_matrix, precision_score, f1_score, accuracy_score, recall_score
 import json
 import glob
-from preprocesstwitter import PreprocessTwitter
-from heuristics import Heuristics
+from .preprocesstwitter import PreprocessTwitter
+from .heuristics import Heuristics
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 #from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from StanceClassifier.util import Util, path_from_root
 
 
 class Features():
@@ -49,7 +50,7 @@ class Features():
 
 
     def read_doubt_words(self, f):
-        f_doubt = open(f, "r")
+        f_doubt = open(path_from_root(f), "r")
         v_doubt = []
         for l in f_doubt.readlines():
             tokens = l.split(",")
@@ -58,7 +59,7 @@ class Features():
         return v_doubt
 
     def read_no_doubt_words(self, f):
-        f_no_doubt = open(f, "r")
+        f_no_doubt = open(path_from_root(f), "r")
         v_no_doubt = []
         for l in f_no_doubt.readlines():
             tokens = l.split(",")
@@ -67,7 +68,7 @@ class Features():
         return v_no_doubt
 
     def read_surprise_words(self, f):
-        f_surprise = open(f, "r")
+        f_surprise = open(path_from_root(f), "r")
         v_surprise = []
         for l in f_surprise.readlines():
             t = l.split("\t")
@@ -75,7 +76,7 @@ class Features():
         return v_surprise
 
     def read_google_bad_words(self, f):
-        f_google_bad = open(f, "r")
+        f_google_bad = open(path_from_root(f), "r")
         v_google_bad = []
         for l in f_google_bad.readlines():
             t = l.split(":")
@@ -83,7 +84,7 @@ class Features():
         return v_google_bad
 
     def read_vulgar_words(self, f):
-        f_vulgar = open(f, "r")
+        f_vulgar = open(path_from_root(f), "r")
         v_vulgar = []
         for l in f_vulgar.readlines():
             t = l.split("-")
@@ -92,14 +93,14 @@ class Features():
 
 
     def read_acronyms(self, f):
-        f_acronym = open(f, "r")
+        f_acronym = open(path_from_root(f), "r")
         v_acronym = []
         for l in f_acronym.readlines():
             v_acronym.append(l.strip())
         return v_acronym
 
     def read_emoticon(self, f):
-        f_emoticon = open(f, "r")
+        f_emoticon = open(path_from_root(f), "r")
         dict_emoticon = {}
         for l in f_emoticon.readlines():
             t = l.strip().split("\t")
@@ -110,7 +111,7 @@ class Features():
 
     def loadGloveModel(self, gloveFile):
         print("Loading Glove Model")
-        f = open(gloveFile,'r')
+        f = open(path_from_root(gloveFile), 'r')
         model = {}
         for line in f:
             splitLine = line.split(" ")
@@ -122,7 +123,7 @@ class Features():
         return model
 
     def open_json(self, f):
-        with open(f) as json_file:
+        with open(path_from_root(f)) as json_file:
             data = json.load(json_file)
             return data
 

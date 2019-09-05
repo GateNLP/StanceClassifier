@@ -1,4 +1,4 @@
-from extract_features import Features
+from .extract_features import Features
 import json
 import sys
 

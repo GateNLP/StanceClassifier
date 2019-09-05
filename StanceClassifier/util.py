@@ -1,3 +1,17 @@
+import os
+from pathlib import Path
+
+
+def get_project_root():
+    return Path(__file__).parent.parent
+
+def path_from_root(path):
+    """
+    Appends the path to the project's root path obtained from get_project_root()
+    :param path: Relative path that will be joined to the root path of the project
+    :return:
+    """
+    return os.path.join(get_project_root(), path)
 
 class Util():
 

@@ -23,7 +23,7 @@ This is a re-implementation of Aker et al. (2017) ["Simple Open Stance Classific
 
 ### Basic usage
 ```
-python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
+python -m StanceClassifier -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
 ```
     Supported languages: en
     Supported models: 
@@ -40,9 +40,11 @@ python __main__.py -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <MODEL>
 
     and a vector with the probabilities returned for each class.
 
-    The folder `examples` contains a source and reply example.
+    The folder `examples` contains examples of original tweets and replies:
+        original_old and reply_old are examples of the old JSON files (140 characters)
+        original_new and reply_new are examples of the new JSON files (280 characters)
 
-### `StanceClassifer` class
+### `StanceClassifer` class (StanceClassifier.stance_classifier.StanceClassifier)
 This is the main class in this project. If you want to add this project as part of your own project, you should import this class. 
 
 ### Server usage
@@ -50,25 +52,26 @@ We have implemented TCP and HTTP servers. Server parameters are defined in the `
 
 To run the TCP server:
 ```
-python server/Run_TCP_StanceClassifier_Server.py
+python Run_TCP_StanceClassifier_Server.py
 ```
 
 Testing the TCP server:
 ```
-python server/Test_Run_TCP_StanceClassifier_Server.py
+python Test_Run_TCP_StanceClassifier_Server.py
 ```
 
 The HTTP server uses a TCP server already running:
 ```
-python server/Run_HTTP_StanceClassifier_Server.py
+python Run_HTTP_StanceClassifier_Server.py
 ```
 
 To test the HTTP server:
 ```
-python server/Test_Run_HTTP_StanceClassifier_Server.py
+python Test_Run_HTTP_StanceClassifier_Server.py
 ```
 
 ### Training new models
-To train new models, you can edit `training/training.py` (more support will be given in the future). To run:
+To train new models, you can edit `train_model.py` (more support will be given in the future). To run:
 ```
-python training/training.py
+python train_model.py
+```
