@@ -1,5 +1,5 @@
 nltk
 numpy
 scipy
-scikit_learn
+scikit_learn==0.21.2
 joblib
