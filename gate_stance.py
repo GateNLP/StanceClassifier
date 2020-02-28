@@ -8,18 +8,32 @@ import json
 import re
 import warnings
 
+# via https://github.com/GateNLP/gateplugin-python
 from gatenlp import GateNlpPr, interact
+
+from StanceClassifier.stance_classifier import StanceClassifier
 
 
 JSON = json.JSONDecoder()
 
 
 class EmbeddedJSON(collections.namedtuple("EmbeddedTweet", "json begin end")):
-    pass
+    """
+    This class is a loaded JSON object (at .json) associated
+    with .begin and .end offsets within the string whence it was parsed.
+    """
+
+
+classifier = None
 
 
 @GateNlpPr
 def run(doc, **kwargs):
+    global classifier
+
+    if classifier is None:
+        classifier = StanceClassifier("lr")
+
     text = doc.text
 
     annotations = doc.get_annotations()
@@ -39,12 +53,16 @@ def run(doc, **kwargs):
         embedded = tweets_by_id[reply.get("id_str")]
         tweet_id = embedded.json.get("id_str")
         in_reply_to = embedded.json.get("in_reply_to_status_id_str")
-        annotations.add(
-            embedded.begin,
-            embedded.end,
-            "Tweet JSON",
-            {"tweet_id": tweet_id, "in_reply_to": in_reply_to},
-        )
+
+        original = tweets_by_id[in_reply_to]
+
+        classification, scores = classifier.classify(original.json, embedded.json)
+
+        features = stance_classification_as_features(classification, scores)
+        features["tweet_id"] = tweet_id
+        features["in_reply_to"] = in_reply_to
+
+        annotations.add(embedded.begin, embedded.end, "Tweet Stance", features)
 
 
 def filter_replies(tweets):
@@ -92,7 +110,7 @@ def iter_json(text):
     .begin index in text of the beginning of the JSON;
     .end index in text of the end of the JSON.
 
-    JSON documents in the input can be separate from each other
+    JSON documents in the input can be separated from each other
     with whitespace, or nothing at all.
     """
 
@@ -117,6 +135,29 @@ def iter_json(text):
         end_index = p
 
         yield EmbeddedJSON(a_json, start_index, end_index)
+
+
+def stance_classification_as_features(class_index, scores):
+    """
+    Takes as input the integer class and scores array and
+    returns a dictionary of features that can be used on a GATE
+    Basic Document annotation.
+
+    The input is described in the StanceClassifier README:
+    https://github.com/GateNLP/StanceClassifier#usage
+    """
+
+    class_index = int(class_index)
+
+    result = dict()
+    classes = ["support", "deny", "query", "comment"]
+
+    for key, score in zip(classes, scores):
+        result[key + "_score"] = score
+
+    result["stance_class"] = classes[class_index]
+
+    return result
 
 
 interact()
