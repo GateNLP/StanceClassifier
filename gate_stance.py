@@ -62,7 +62,7 @@ def run(doc, **kwargs):
         features["tweet_id"] = tweet_id
         features["in_reply_to"] = in_reply_to
 
-        annotations.add(embedded.begin, embedded.end, "Tweet Stance", features)
+        annotations.add(embedded.begin, embedded.end, "TweetStance", features)
 
 
 def filter_replies(tweets):
