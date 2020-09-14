@@ -27,26 +27,26 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 #from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from StanceClassifier.util import Util, path_from_root
 
-
 class Features():
 
-    def __init__(self, resources): 
-        self.emb_file = resources["embeddings_file"]
-        self.emb_size = int(resources["embeddings_size"])
-        self.emoticons = self.read_emoticon(resources["emoticon"])
-        self.emoticons_cat = np.zeros(42)
-        self.acronyms = self.read_acronyms(resources["acronyms"])
-        self.vulgarWords = self.read_vulgar_words (resources["vulgar_words"])
-        self.googleBadWords = self.read_google_bad_words(resources["google_bad_words"])
-        self.surpriseWords = self.read_surprise_words(resources["affect_surprise"])
-        self.doubtWords = self.read_doubt_words(resources["doubt_words"])
-        self.noDoubtWords = self.read_no_doubt_words(resources["no_doubt_words"])
+    def __init__(self, resources, only_text = False):
+        if only_text == False:
+            self.emb_file = resources["embeddings_file"]
+            self.emb_size = int(resources["embeddings_size"])
+            self.emoticons = self.read_emoticon(resources["emoticon"])
+            self.emoticons_cat = np.zeros(42)
+            self.acronyms = self.read_acronyms(resources["acronyms"])
+            self.vulgarWords = self.read_vulgar_words (resources["vulgar_words"])
+            self.googleBadWords = self.read_google_bad_words(resources["google_bad_words"])
+            self.surpriseWords = self.read_surprise_words(resources["affect_surprise"])
+            self.doubtWords = self.read_doubt_words(resources["doubt_words"])
+            self.noDoubtWords = self.read_no_doubt_words(resources["no_doubt_words"])
 
-        self.scaler = load(path_from_root(resources["scaler"]))
+            #self.scaler = load(resources["scaler"])
 
-        self.glove = self.loadGloveModel(self.emb_file)
+            self.glove = self.loadGloveModel(self.emb_file)
 
-        self.support_terms = ["support", "join", "confirm", "aid", "help"]
+            self.support_terms = ["support", "join", "confirm", "aid", "help"]
 
 
     def read_doubt_words(self, f):
@@ -156,7 +156,6 @@ class Features():
         hc = []
         c = 0
 
-
         if "text" not in source.keys():
             s_text_raw = source["full_text"].lower()
         else:
@@ -167,8 +166,8 @@ class Features():
         else:
             r_text_raw = reply["text"].lower()
 
-        s_text = tokenizer.tokenize(s_text_raw)
-        r_text = tokenizer.tokenize(r_text_raw)
+        s_text = tokenizer.tokenize(s_text_raw).lower()
+        r_text = tokenizer.tokenize(r_text_raw).lower()
 
         s_id = source["id"]
         r_id = reply["id"]
@@ -456,8 +455,24 @@ class Features():
         aux_vector = np.append(s_vector, r_vector)
         final_vector = np.append(aux_vector, hc_vector)
         
-        final_vector_scaler = self.scaler.transform(final_vector.reshape(1, -1))
+        #final_vector_scaler = self.scaler.transform(final_vector.reshape(1, -1))
 
-        return final_vector_scaler
+        return final_vector
     
+    def extract_text(self, source, reply):
+        final_text = []
+        tokenizer = PreprocessTwitter()
+        if "text" not in source.keys():
+            s_text_raw = source["full_text"]
+        else:
+            s_text_raw = source["text"]
 
+        if "text" not in reply.keys():
+            r_text_raw = reply["full_text"]
+        else:
+            r_text_raw = reply["text"]
+
+        s_text = tokenizer.tokenize(s_text_raw)
+        r_text = tokenizer.tokenize(r_text_raw)
+        final_text.append((s_text, r_text))
+        return final_text

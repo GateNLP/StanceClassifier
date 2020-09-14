@@ -17,7 +17,9 @@ This is a re-implementation of Aker et al. (2017) ["Simple Open Stance Classific
 
 2) Clone this repository
 
-3) Download the [resources](http://staffwww.dcs.shef.ac.uk/people/C.Scarton/resources.tar.gz) required for feature extraction and extract it inside the main folder (`StanceClassifer`)
+3) Download the [resources](https://github.com/GateNLP/StanceClassifier/releases/download/v0.1/resources.tar.gz) required for feature extraction and extract it inside the main folder (`StanceClassifer`)
+
+4) Download the [trained models](https://github.com/GateNLP/StanceClassifier/releases/download/v0.1/models.tar.gz) archive and extract it inside the main folder (`StanceClassifer`)
 
 ## Usage
 
@@ -27,10 +29,8 @@ python -m StanceClassifier -l <LANGUAGE> -s <ORIGINAL_JSON> -o <REPLY_JSON> -c <
 ```
     Supported languages: en
     Supported models: 
-        rf (Random Forest)
-        mlp (Multi-layer perceptron)
-        lr (Logistic Regression)
-        svm (Support Vector Machines)
+        ens (Feature-based ensemble model built with Logistic Regression, Random Forest and Multi-Layer Perceptron classifiers)
+        bert-tm (BERT-based model, i.e. fine-tuning of BERT for the rumour stance classification task, using threshold moving for imbalanced data treatment)
 
     The output is a class:
         0.0 = support

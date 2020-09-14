@@ -1,6 +1,8 @@
 *.pyc
 resources/
 resources.tar.gz
+models/
+models.tar.gz
 __pycache__/
 training/models/
 *.pyc

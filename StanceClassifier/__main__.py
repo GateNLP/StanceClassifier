@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='Stance classifier for the WeVerify
 parser.add_argument('-l', help='language', choices=['en'])
 parser.add_argument('-s', help='stance file to be classified (json file)')
 parser.add_argument('-o', help='original stance file (json file)')
-parser.add_argument('-c', help='classifier', choices=['lr', 'rf', 'svm', 'mlp'], required=True)
+parser.add_argument('-c', help='classifier', choices=['ens','bert-tm'], required=True)
 
 
 args = parser.parse_args()

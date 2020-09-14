@@ -74,6 +74,6 @@ class PreprocessTwitter():
     
         text = " ".join(tknzr.tokenize(text))
 
-        return text.lower()
+        return text
 
 

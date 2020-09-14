@@ -3,10 +3,10 @@ import json
 import sys
 from joblib import load
 import numpy as np
-
+import ktrain
 from .features.extract_features import Features
 from .util import Util, path_from_root
-
+from .testing import test
 RESOURCES_PATH = path_from_root("resources.txt")
 
 class StanceClassifier():
@@ -17,29 +17,29 @@ class StanceClassifier():
         #Load resources:
         print("Loading resources")
         util = Util()
-
+        
         self.resources = util.loadResources(RESOURCES_PATH)
         print("Done. %d resources added!" % len(self.resources.keys()))
-        self.feature_extractor = Features(self.resources)
+		
+        if model == "bert-tm":
+            self.feature_extractor = Features(self.resources, only_text = True)
+        else:
+            self.feature_extractor = Features(self.resources, only_text = False)
+    
+    def classify(self, source, reply): 
+        
+        if self.model == "ens":
+            tweet_features = np.array(self.feature_extractor.features(source, reply)).reshape(1, -1)
+            scaler_list = load(path_from_root(self.resources["scaler_ensemble"]))
+            clf_list = load(path_from_root(self.resources["model_ensemble"]))
+            stance_class, stance_prob = test.predict_ensemble(clf_list, scaler_list, tweet_features)
+			
+        if self.model == "bert-tm":
+            tweet_pair = self.feature_extractor.extract_text(source, reply)
+            clf = ktrain.load_predictor(path_from_root(self.resources["model_bert"]))
+            stance_class, stance_prob = test.predict_bert(clf, tweet_pair)
 
-    def classify(self, source, reply):
-        """
-        :param source: JSON dict object source
-        :param reply: JSON dict object reply
-        :return: stance_class, stance_prob
-            stance_class float
-                0.0 = support
-                1.0 = deny
-                2.0 = query
-                3.0 = comment
-            stance_prob [support_prob, deny_prob, query_prob, comment_prob]
-        """
-        #Load resources:
-        clf = load(path_from_root(self.resources["model_" + self.model]))
-        tweet_features = np.array(self.feature_extractor.features(source, reply))
-        stance_class = clf.predict(tweet_features.reshape(1, -1))[0]
-        stance_prob = clf.predict_proba(tweet_features.reshape(1, -1))[0]
+			        
+        #stance_class = clf.predict(tweet_features.reshape(1, -1))[0]
+        #stance_prob = clf.predict_proba(tweet_features.reshape(1, -1))[0]
         return stance_class, stance_prob
-
-
-
