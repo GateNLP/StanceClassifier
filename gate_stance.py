@@ -32,7 +32,7 @@ def run(doc, **kwargs):
     global classifier
 
     if classifier is None:
-        classifier = StanceClassifier("lr")
+        classifier = StanceClassifier(kwargs.get("model", "ens"))
 
     text = doc.text
 
