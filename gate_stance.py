@@ -147,6 +147,9 @@ def stance_classification_as_features(class_index, scores):
     https://github.com/GateNLP/StanceClassifier#usage
     """
 
+    print(class_index)
+    print(scores)
+
     class_index = int(class_index)
 
     result = dict()
