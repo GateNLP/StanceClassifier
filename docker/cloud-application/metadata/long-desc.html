@@ -1,0 +1,25 @@
+<p class="clearfix">An application that classifies a reply to a tweet based on it's stance to the original. Possible stances are; support, deny, query, and comment. Note that the iput to this application should be document containing the official Twitter JSON of both the original tweet and the replies you wish to classify. Both the reply and the original tweet must be present for the application to work, and you can provide as many tweets as you like (multiple replies to a single tweet, or multiple tweet/reply pairs etc.). If using the REST API documents should be sent as <code>text/plain</code> to avoid the JSON being parsed by GATE Cloud prior to the application running.</p>
+
+<p><button class="btn btn-info" data-toggle="collapse" data-target="#ldAnnotationDetails"><i class="icon-info-sign icon-white"></i> Annotation details</button></p>
+
+<div class="collapse clearfix" id="ldAnnotationDetails">
+<table>
+  <tr>
+    <td colspan="2"><b>Default annotations</b></td>
+  </tr>
+  <tr>
+    <td><tt>:TweetStance</tt></td>
+    <td>Each reply (for which the original tweet is supplied) is annotated by the application. Each annotation has the following features:
+      <ul>
+        <li><tt>tweet_id</tt>, the ID of this tweet</li>
+	<li><tt>in_reply_to</tt>, the ID of the tweet this one is in reply to
+        <li><tt>stance_class</tt>, the assigned stance class (one of support, deny, query, or comment)</li>
+        <li><tt>support-score</tt>, the support score (all four scores add to 1)</li>
+        <li><tt>deny-score</tt>, the deny score (all four scores add to 1)</li>
+        <li><tt>query-score</tt>, the query score (all four scores add to 1)</li>
+        <li><tt>comment-score</tt>, the comment score (all four scores add to 1)</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+</div>
