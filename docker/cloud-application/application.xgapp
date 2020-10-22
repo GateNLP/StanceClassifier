@@ -21,7 +21,7 @@
                 <entry>
                   <string>serviceUrl</string>
                   <gate.util.persistence.PersistenceManager-URLHolder>
-                    <urlString>http://localhost:8080/process</urlString>
+                    <urlString>http://localhost:8081/process</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
                 </entry>
               </localMap>
