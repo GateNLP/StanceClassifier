@@ -9,4 +9,6 @@ no_doubt_words|||resources/linguisticFeatures/noDoubtWords.txt
 vulgar_words|||resources/linguisticFeatures/vulgarWordsDic.txt
 scaler_ensemble|||models/scaler_ens
 model_ensemble|||models/model_ensemble
-model_bert|||models/BERT_TM
+model_bert_english|||models/BERT_english
+model_bert_multilingual|||models/BERT_multilingual
+model_cloud_docker|||models/cloud_docker

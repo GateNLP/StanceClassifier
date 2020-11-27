@@ -1,9 +1,7 @@
 #!/bin/bash
 
-TAG=$1
-
 if [ -z "$TAG" ]; then
-  TAG=elg/stance:latest
+  TAG=elg/stance_$1:latest
 fi
 
-exec docker build -f Dockerfile -t $TAG ..
+exec docker build -f Dockerfile -t $TAG --build-arg LANGUAGE=$1 ..
