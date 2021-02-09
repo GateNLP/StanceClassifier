@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata xmlns="http://gate.ac.uk/ns/pipeline-metadata">
-  <pipeline-name>Tweet Stance Classification</pipeline-name>
+  <pipeline-name>Stance Classification: English</pipeline-name>
   <slug>stance-classification</slug>
   <ordering>80</ordering>
   <annotation-selectors>:TweetStance</annotation-selectors>
