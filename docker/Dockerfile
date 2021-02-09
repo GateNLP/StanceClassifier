@@ -28,6 +28,9 @@ COPY models/BERT_$LANGUAGE /elg/models/cloud_docker
 COPY StanceClassifier /elg/StanceClassifier
 COPY docker/elg_stance.py docker/docker-entrypoint.sh resources.txt /elg/
 
+# Run one classify, to pre-cache any download-on-first-use things
+RUN ["venv/bin/python", "-c", "from StanceClassifier.stance_classifier import StanceClassifier\nStanceClassifier('cloud-docker').classify({'text':'original'},{'text':'reply'})"]
+
 ENV WORKERS=1 REQUEST_SIZE_LIMIT=100000
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
