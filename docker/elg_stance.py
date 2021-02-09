@@ -21,6 +21,7 @@
 
 from quart import Quart, request
 from quart.exceptions import BadRequest
+from quart.utils import run_sync
 import cgi
 import codecs
 import os
@@ -127,7 +128,7 @@ async def process_request():
 
         original = tweets_by_id[in_reply_to]
 
-        classification, scores = classifier.classify(original.json, embedded.json)
+        classification, scores = await run_sync(classifier.classify)(original.json, embedded.json)
 
         features = stance_classification_as_features(classification, scores)
         features["tweet_id"] = tweet_id
