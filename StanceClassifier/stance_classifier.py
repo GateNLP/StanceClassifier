@@ -25,31 +25,31 @@ class StanceClassifier():
             self.feature_extractor = Features(self.resources, only_text = True)
         else:
             self.feature_extractor = Features(self.resources, only_text = False)
+
+        self.clf = None
+
+        if model == "cloud-docker":
+            self.clf = ktrain.load_predictor(path_from_root(self.resources["model_cloud_docker"]))
+        
+        if model == "ens":
+            self.scaler_list = load(path_from_root(self.resources["scaler_ensemble"]))
+            self.clf_list = load(path_from_root(self.resources["model_ensemble"]))
+			
+        if model == "bert-english":
+            self.clf = ktrain.load_predictor(path_from_root(self.resources["model_bert_english"]))
+
+        if model == "bert-multilingual":
+            self.clf = ktrain.load_predictor(path_from_root(self.resources["model_bert_multilingual"]))
     
     def classify(self, source, reply):
 
-        if self.model == "cloud-docker":
-            tweet_pair = self.feature_extractor.extract_text(source, reply)
-            clf = ktrain.load_predictor(path_from_root(self.resources["model_cloud_docker"]))
-            stance_class, stance_prob = test.predict_bert(clf, tweet_pair)
-        
-        if self.model == "ens":
+        if self.clf is None:
+            # Ensemble model
             tweet_features = np.array(self.feature_extractor.features(source, reply)).reshape(1, -1)
-            scaler_list = load(path_from_root(self.resources["scaler_ensemble"]))
-            clf_list = load(path_from_root(self.resources["model_ensemble"]))
-            stance_class, stance_prob = test.predict_ensemble(clf_list, scaler_list, tweet_features)
-			
-        if self.model == "bert-english":
+            stance_class, stance_prob = test.predict_ensemble(self.clf_list, self.scaler_list, tweet_features)
+        else:
+            # BERT model
             tweet_pair = self.feature_extractor.extract_text(source, reply)
-            clf = ktrain.load_predictor(path_from_root(self.resources["model_bert_english"]))
-            stance_class, stance_prob = test.predict_bert(clf, tweet_pair)
-
-        if self.model == "bert-multilingual":
-            tweet_pair = self.feature_extractor.extract_text(source, reply)
-            clf = ktrain.load_predictor(path_from_root(self.resources["model_bert_multilingual"]))
-            stance_class, stance_prob = test.predict_bert(clf, tweet_pair)
-
-			        
-        #stance_class = clf.predict(tweet_features.reshape(1, -1))[0]
-        #stance_prob = clf.predict_proba(tweet_features.reshape(1, -1))[0]
+            stance_class, stance_prob = test.predict_bert(self.clf, tweet_pair)
+        
         return stance_class, stance_prob
