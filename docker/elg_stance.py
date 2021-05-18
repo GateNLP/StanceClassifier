@@ -98,26 +98,26 @@ async def process_request():
     ctype, type_params = cgi.parse_header(request.content_type)
     if ctype == 'text/plain':
         content = await get_text_content(request, type_params.get('charset', 'utf-8'))
-        return await process(iter_json(content), True)
+        return await process(iter_json(content))
     elif ctype == 'application/json':
         data = await request.get_json()
         # sanity checks on the request message
         if data.get('type') == 'text':
             if 'content' not in data:
                 raise BadRequest()
-            return await process(iter_json(data['content']), True)
+            return await process(iter_json(data['content']))
         elif data.get('type') == 'structuredText':
             # check that the request is a "flat" request, i.e. all the top
             # level texts are leaf nodes
             if 'texts' not in data or any('content' not in text for text in data['texts']):
                 raise BadRequest()
-            return await process(structured_json(data['texts']), False)
+            return await process(structured_json(data['texts']))
         else:
             raise BadRequest()
     else:
         raise BadRequest()
 
-async def process(twt_source, add_id_features):
+async def process(twt_source):
     annotations = dict()
 
     tweets_by_id = {}
@@ -140,8 +140,10 @@ async def process(twt_source, add_id_features):
         classification, scores = await run_sync(classifier.classify)(original.json, embedded.json)
 
         features = stance_classification_as_features(classification, scores)
-        if add_id_features:
+        # Add ID and reply features, if they are not auto-generated IDs
+        if not tweet_id.startswith('gen:'):
             features["tweet_id"] = tweet_id
+        if not in_reply_to.startswith('gen:'):
             features["in_reply_to"] = in_reply_to
 
         annot = {"start": embedded.begin, "end": embedded.end, "features": features}
