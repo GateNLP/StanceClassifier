@@ -24,6 +24,18 @@
                     <urlString>@ELG_ENDPOINT@</urlString>
                   </gate.util.persistence.PersistenceManager-URLHolder>
                 </entry>
+                <entry>
+                  <string>annotationTypeMapping</string>
+                  <gate.util.persistence.MapPersistence>
+                    <mapType>gate.util.SimpleFeatureMapImpl</mapType>
+                    <localMap>
+                      <entry>
+                        <string>Stance</string>
+                        <string>TweetStance</string>
+                      </entry>
+                    </localMap>
+                  </gate.util.persistence.MapPersistence>
+                </entry>
               </localMap>
             </runtimeParams>
             <resourceType>gate.elg.client.ElgClientPR</resourceType>

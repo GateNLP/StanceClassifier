@@ -147,7 +147,7 @@ async def process(twt_source):
             features["in_reply_to"] = in_reply_to
 
         annot = {"start": embedded.begin, "end": embedded.end, "features": features}
-        annotations.setdefault("TweetStance", []).append(annot)
+        annotations.setdefault("Stance", []).append(annot)
 
     return dict(response = { 'type':'annotations', 'annotations':annotations,  })
 
