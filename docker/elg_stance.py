@@ -98,22 +98,31 @@ async def process_request():
     ctype, type_params = cgi.parse_header(request.content_type)
     if ctype == 'text/plain':
         content = await get_text_content(request, type_params.get('charset', 'utf-8'))
+        return await process(iter_json(content))
     elif ctype == 'application/json':
         data = await request.get_json()
         # sanity checks on the request message
-        if (data.get('type') != 'text') or ('content' not in data):
+        if data.get('type') == 'text':
+            if 'content' not in data:
+                raise BadRequest()
+            return await process(iter_json(data['content']))
+        elif data.get('type') == 'structuredText':
+            # check that the request is a "flat" request, i.e. all the top
+            # level texts are leaf nodes
+            if 'texts' not in data or any('content' not in text for text in data['texts']):
+                raise BadRequest()
+            return await process(structured_json(data['texts']))
+        else:
             raise BadRequest()
-        content = data['content']
     else:
         raise BadRequest()
 
+async def process(twt_source):
     annotations = dict()
 
     tweets_by_id = {}
 
-    print(content)
-
-    for tweet in iter_json(content):
+    for tweet in twt_source:
         tweet_id = tweet.json.get("id_str")
         if tweet_id in tweets_by_id:
             warnings.warn("Tweet id {} has been duplicated".format(tweet_id))
@@ -131,8 +140,11 @@ async def process_request():
         classification, scores = await run_sync(classifier.classify)(original.json, embedded.json)
 
         features = stance_classification_as_features(classification, scores)
-        features["tweet_id"] = tweet_id
-        features["in_reply_to"] = in_reply_to
+        # Add ID and reply features, if they are not auto-generated IDs
+        if not tweet_id.startswith('gen:'):
+            features["tweet_id"] = tweet_id
+        if not in_reply_to.startswith('gen:'):
+            features["in_reply_to"] = in_reply_to
 
         annot = {"start": embedded.begin, "end": embedded.end, "features": features}
         annotations.setdefault("TweetStance", []).append(annot)
@@ -209,6 +221,23 @@ def iter_json(text):
 
         yield EmbeddedJSON(a_json, start_index, end_index)
 
+def structured_json(texts_list):
+    """
+    Convert structured text JSON format into the iterator-of-twitter-jsons that
+    the classifier expects.
+    """
+    for idx, doc in enumerate(texts_list):
+        twt_json = {
+            'text':doc['content'],
+            'id_str':str(doc.get('features', {}).get('id', f'gen:{idx}')),
+        }
+
+        reply_to = doc.get('features', {}).get('reply_to', 'gen:0' if idx > 0 else None)
+        if reply_to:
+            twt_json['in_reply_to_status_id_str'] = str(reply_to)
+
+        yield EmbeddedJSON(twt_json, idx, idx+1)
+
 def stance_classification_as_features(class_index, scores):
     """
     Takes as input the integer class and scores array and
@@ -219,8 +248,8 @@ def stance_classification_as_features(class_index, scores):
     https://github.com/GateNLP/StanceClassifier#usage
     """
 
-    print(class_index)
-    print(scores)
+    #print(class_index)
+    #print(scores)
 
     class_index = int(class_index)
 
