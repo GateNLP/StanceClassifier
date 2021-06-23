@@ -128,16 +128,15 @@ async def process(twt_source):
             warnings.warn("Tweet id {} has been duplicated".format(tweet_id))
         tweets_by_id[tweet_id] = tweet
 
-    replies = filter_replies([tw.json for tw in tweets_by_id.values()])
+    replies = filter_replies(tweets_by_id)
 
     for reply in replies:
-        embedded = tweets_by_id[reply.get("id_str")]
-        tweet_id = embedded.json.get("id_str")
-        in_reply_to = embedded.json.get("in_reply_to_status_id_str")
+        tweet_id = reply.json.get("id_str")
+        in_reply_to = reply.json.get("in_reply_to_status_id_str")
 
         original = tweets_by_id[in_reply_to]
 
-        classification, scores = await run_sync(classifier.classify)(original.json, embedded.json)
+        classification, scores = await run_sync(classifier.classify)(original.json, reply.json)
 
         features = stance_classification_as_features(classification, scores)
         # Add ID and reply features, if they are not auto-generated IDs
@@ -146,14 +145,14 @@ async def process(twt_source):
         if not in_reply_to.startswith('gen:'):
             features["in_reply_to"] = in_reply_to
 
-        annot = {"start": embedded.begin, "end": embedded.end, "features": features}
+        annot = {"start": reply.begin, "end": reply.end, "features": features}
         annotations.setdefault("Stance", []).append(annot)
 
     return dict(response = { 'type':'annotations', 'annotations':annotations,  })
 
-def filter_replies(tweets):
+def filter_replies(tweets_by_id):
     """
-    The input is a list of tweets.
+    The input is a dict mapping tweet ID to EmbeddedJSON
 
     Fitlers the list to the replies, so that
     the return list consists of tweets
@@ -163,21 +162,12 @@ def filter_replies(tweets):
     elements of the result list must have appeared in the input.
     """
 
-    # All the tweets, indexed by their id_str
-    tweet_dict = dict()
-    # All the replies to a tweet (as a list), indexed by the
-    # id_str of the original tweet (to which the replies are replying).
+    # All the tweets that are valid replies
     replies = []
 
-    for tweet in tweets:
-        tweet_id = tweet["id_str"]
-        if tweet_id in tweet_dict:
-            warnings.warn("Tweet id {} has been duplicated".format(tweet_id))
-            continue
-        tweet_dict[tweet_id] = tweet
-
-        reply_to = tweet.get("in_reply_to_status_id_str")
-        if reply_to and reply_to in tweet_dict:
+    for tweet in tweets_by_id.values():
+        reply_to = tweet.json.get("in_reply_to_status_id_str")
+        if reply_to and reply_to in tweets_by_id:
             replies.append(tweet)
 
     return replies
