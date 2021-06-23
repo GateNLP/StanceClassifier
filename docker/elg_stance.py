@@ -226,13 +226,19 @@ def structured_json(texts_list):
     Convert structured text JSON format into the iterator-of-twitter-jsons that
     the classifier expects.
     """
+    # do any of the texts in our list have explicit id or reply_to features? If
+    # not, we assume the first entry is an original and all the other entries
+    # are replies to it.
+    explicit_refs = any(("id" in f or "reply_to" in f) for f in (doc.get('features', {}) for doc in texts_list))
+
     for idx, doc in enumerate(texts_list):
         twt_json = {
             'text':doc['content'],
             'id_str':str(doc.get('features', {}).get('id', f'gen:{idx}')),
         }
 
-        reply_to = doc.get('features', {}).get('reply_to', 'gen:0' if idx > 0 else None)
+        # Only link reply_to back to the first text if there are no explicit refs
+        reply_to = doc.get('features', {}).get('reply_to', 'gen:0' if (idx > 0 and not explicit_refs) else None)
         if reply_to:
             twt_json['in_reply_to_status_id_str'] = str(reply_to)
 
