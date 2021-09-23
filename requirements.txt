@@ -3,7 +3,7 @@ numpy
 scipy
 scikit_learn==0.23.1
 joblib
-ktrain
+ktrain==0.25.4
 sortedcontainers
-tensorflow
+tensorflow==2.4.1
 quart
