@@ -19,9 +19,8 @@
 # every sequence of non-whitespace characters in the supplied text.
 #
 
-from quart import Quart, request
-from quart.exceptions import BadRequest
-from quart.utils import run_sync
+from flask import Flask, request
+from werkzeug.exceptions import BadRequest
 import cgi
 import codecs
 import os
@@ -33,7 +32,7 @@ import warnings
 
 from StanceClassifier.stance_classifier import StanceClassifier
 
-app = Quart(__name__)
+app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
 
 # Take plain text post size limit from env
@@ -76,12 +75,12 @@ def request_too_large(e):
 #      'features':{'string':sp.text, 'id':sp.kb_id_, 'sentiment':sp.sentiment}
 #    })
 
-async def get_text_content(request, charset):
+def get_text_content(request, charset):
     decoder_factory = codecs.getincrementaldecoder(charset)
     decoder = decoder_factory(errors='strict')
     content = ''
     limit_hit = False
-    async for chunk in request.body:
+    for chunk in request.body:
         if not(limit_hit):
             content += decoder.decode(chunk)
         if len(content) > size_limit:
@@ -93,31 +92,31 @@ async def get_text_content(request, charset):
     return content
 
 @app.route('/process', methods=['POST'])
-async def process_request():
+def process_request():
     """Main request processing logic - accepts a JSON request and returns a JSON response."""
     ctype, type_params = cgi.parse_header(request.content_type)
     if ctype == 'text/plain':
-        content = await get_text_content(request, type_params.get('charset', 'utf-8'))
-        return await process(iter_json(content))
+        content = get_text_content(request, type_params.get('charset', 'utf-8'))
+        return process(iter_json(content))
     elif ctype == 'application/json':
-        data = await request.get_json()
+        data = request.get_json()
         # sanity checks on the request message
         if data.get('type') == 'text':
             if 'content' not in data:
                 raise BadRequest()
-            return await process(iter_json(data['content']))
+            return process(iter_json(data['content']))
         elif data.get('type') == 'structuredText':
             # check that the request is a "flat" request, i.e. all the top
             # level texts are leaf nodes
             if 'texts' not in data or any('content' not in text for text in data['texts']):
                 raise BadRequest()
-            return await process(structured_json(data['texts']))
+            return process(structured_json(data['texts']))
         else:
             raise BadRequest()
     else:
         raise BadRequest()
 
-async def process(twt_source):
+def process(twt_source):
     annotations = dict()
 
     tweets_by_id = {}
@@ -136,7 +135,7 @@ async def process(twt_source):
 
         original = tweets_by_id[in_reply_to]
 
-        classification, scores = await run_sync(classifier.classify)(original.json, reply.json)
+        classification, scores = classifier.classify(original.json, reply.json)
 
         features = stance_classification_as_features(classification, scores)
         # Add ID and reply features, if they are not auto-generated IDs
