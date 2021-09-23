@@ -6,4 +6,4 @@ joblib
 ktrain==0.25.4
 sortedcontainers
 tensorflow==2.4.1
-quart
+quart==0.14.1
