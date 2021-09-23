@@ -8,7 +8,7 @@ The Python-based classifiers can be built using the `./build.sh` script in this 
 
 ```
 TAG=elg.docker.gate.ac.uk/stance-english:latest ./build.sh english
-TAG=elg.docker.gate.ac.uk/stance-multilingual./build.sh multilingual
+TAG=elg.docker.gate.ac.uk/stance-multilingual ./build.sh multilingual
 ```
 
 The `Dockerfile` has been designed so that the two images will share most of their layers including the (large) Python virtual environment, only the model layer and configuration variables will differ.
