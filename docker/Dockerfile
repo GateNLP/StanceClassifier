@@ -16,7 +16,13 @@ USER elg:elg
 WORKDIR /elg
 
 # Create a Python virtual environment for the dependencies
-RUN python -mvenv venv && venv/bin/pip --no-cache-dir install -r requirements.txt
+# We mount a cache which we use for pip. This means that
+# repeat builds are much much quicker as we don't need to
+# re-download all the dependencies. In this instance we've
+# used a none default directory so that ~/.cache doesn't end
+# up owned by root and so that when we run the classifier
+# torch can cache it's downloads in the normal place
+RUN --mount=type=cache,target=/elg/.pip-cache,uid=1001 python -mvenv venv && venv/bin/pip --cache-dir /elg/.pip-cache install -r requirements.txt
 
 # Resources are shared across all models
 COPY resources /elg/resources
