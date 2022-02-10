@@ -5,6 +5,6 @@ scikit_learn==0.23.1
 joblib
 ktrain==0.25.4
 sortedcontainers
-tensorflow==2.4.1
+tensorflow==2.5.3
 flask
 gunicorn
