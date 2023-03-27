@@ -147,6 +147,8 @@ def process(twt_source):
         annot = {"start": reply.begin, "end": reply.end, "features": features}
         annotations.setdefault("Stance", []).append(annot)
 
+    print(annotations)
+
     return dict(response = { 'type':'annotations', 'annotations':annotations,  })
 
 def filter_replies(tweets_by_id):
@@ -252,7 +254,7 @@ def stance_classification_as_features(class_index, scores):
     classes = ["support", "deny", "query", "comment"]
 
     for key, score in zip(classes, scores):
-        result[key + "_score"] = score
+        result[key + "_score"] = score.item()
 
     result["stance_class"] = classes[class_index]
 

@@ -48,9 +48,11 @@ def process_model_output(output_TO, output_TA):
     #print("output_TA[ranking_TA[0]]", output_TO[ranking_TO[0]], output_TA[ranking_TA[0]])
 
     if output_TO[ranking_TO[0]] > output_TA[ranking_TA[0]]: # compare
-        return output_TO[ranking_TO[0]], id2label[ranking_TO[0]] # probability, label
+        #return output_TO[ranking_TO[0]], id2label[ranking_TO[0]] # probability, label
+        return ranking_TO[0], output_TO
     else:
-        return output_TA[ranking_TA[0]], id2label[ranking_TA[0]]
+        #return output_TA[ranking_TA[0]], id2label[ranking_TA[0]]
+        return ranking_TA[0], output_TA
 
     
     
