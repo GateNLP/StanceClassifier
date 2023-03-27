@@ -44,7 +44,7 @@ class EmbeddedJSON(collections.namedtuple("EmbeddedTweet", "json begin end")):
     with .begin and .end offsets within the string whence it was parsed.
     """
 
-classifier = StanceClassifier("cloud-docker")
+classifier = StanceClassifier()
 
 JSON = json.JSONDecoder()
 

@@ -1,14 +1,3 @@
-embeddings_file|||resources/glove.twitter.27B.200d.txt
-embeddings_size|||200
-emoticon|||resources/emoticon/emoticonsDic.txt
-acronyms|||resources/linguisticFeatures/acronyms_cleaned.txt
-affect_surprise|||resources/linguisticFeatures/affect_surprise.lst
-doubt_words|||resources/linguisticFeatures/doubtWords.txt
-google_bad_words|||resources/linguisticFeatures/googleOfficialBadWords.txt
-no_doubt_words|||resources/linguisticFeatures/noDoubtWords.txt
-vulgar_words|||resources/linguisticFeatures/vulgarWordsDic.txt
-scaler_ensemble|||models/scaler_ens
-model_ensemble|||models/model_ensemble
-model_bert_english|||models/BERT_english
-model_bert_multilingual|||models/BERT_multilingual
-model_cloud_docker|||models/cloud_docker
+model_BERTweet_TO|||models/BERTWEET/BERTweet_TO
+model_BERTweet_TA|||models/BERTWEET/BERTweet_TA
+model_BERTweet_tokenizer|||models/BERTWEET/BERTweet_tokenizer

@@ -28,14 +28,14 @@ RUN --mount=type=cache,target=/elg/.pip-cache,uid=1001 python -mvenv venv && ven
 COPY resources /elg/resources
 
 # Copy in the relevant model
-ARG LANGUAGE
-COPY models/BERT_$LANGUAGE /elg/models/cloud_docker
+ARG MODEL
+COPY models/$MODEL /elg/models/$MODEL
 
 COPY StanceClassifier /elg/StanceClassifier
 COPY docker/elg_stance.py docker/docker-entrypoint.sh resources.txt /elg/
 
 # Run one classify, to pre-cache any download-on-first-use things
-RUN ["venv/bin/python", "-c", "from StanceClassifier.stance_classifier import StanceClassifier\nStanceClassifier('cloud-docker').classify({'text':'original'},{'text':'reply'})"]
+RUN ["venv/bin/python", "-c", "from StanceClassifier.stance_classifier import StanceClassifier\nStanceClassifier().classify({'text':'original'},{'text':'reply'})"]
 
 ENV WORKERS=1 REQUEST_SIZE_LIMIT=100000
 
