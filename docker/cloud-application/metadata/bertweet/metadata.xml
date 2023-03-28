@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://gate.ac.uk/ns/pipeline-metadata">
+  <pipeline-name>Stance Classification: English</pipeline-name>
+  <slug>stance-classification</slug>
+  <ordering>80</ordering>
+  <annotation-selectors>:TweetStance</annotation-selectors>
+  <additional-annotations></additional-annotations>
+  <tags>
+    <tag>Journalism</tag>
+    <tag>WeVerify</tag>
+    <tag>Twitter</tag>
+    <tag>Misinformation</tag>
+  </tags>
+</metadata>
