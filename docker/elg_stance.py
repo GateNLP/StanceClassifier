@@ -135,7 +135,7 @@ def process(twt_source):
 
         original = tweets_by_id[in_reply_to]
 
-        classification, scores = classifier.classify(original.json, reply.json)
+        classification, scores = classifier.classify(reply.json)
 
         features = stance_classification_as_features(classification, scores)
         # Add ID and reply features, if they are not auto-generated IDs
@@ -168,7 +168,7 @@ def filter_replies(tweets_by_id):
 
     for tweet in tweets_by_id.values():
         reply_to = tweet.json.get("in_reply_to_status_id_str")
-        if reply_to and reply_to in tweets_by_id:
+        if reply_to: # and reply_to in tweets_by_id:
             replies.append(tweet)
 
     return replies

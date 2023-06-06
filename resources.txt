@@ -1,3 +1,2 @@
-model_BERTweet_TO|||models/BERTWEET/BERTweet_TO
-model_BERTweet_TA|||models/BERTWEET/BERTweet_TA
-model_BERTweet_tokenizer|||models/BERTWEET/BERTweet_tokenizer
+model|||models/reply-only_english/XLM
+tokenizer|||models/reply-only_english/tokenizer
