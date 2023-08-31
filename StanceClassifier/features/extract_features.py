@@ -30,11 +30,10 @@ class Features():
         
         tknzr = TweetTokenizer()
         FLAGS = re.MULTILINE | re.DOTALL
-        text = re.sub(r"https?:\/\/\S+\b|www\.(\w+\.)+\S*", "HTTPURL", text, flags=FLAGS)
-        text = re.sub(r"@\w+", "@USER", text, flags=FLAGS)
+        text = re.sub(r"https?:\/\/\S+\b|www\.(\w+\.)+\S*", "http", text, flags=FLAGS)
+        text = re.sub(r"@\w+", "@user", text, flags=FLAGS)
         text_token = tknzr.tokenize(text)
         text = " ".join(text_token)
-        text = emoji.demojize(text)
         
         return text
     

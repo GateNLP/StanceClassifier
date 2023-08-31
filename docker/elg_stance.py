@@ -133,7 +133,7 @@ def process(twt_source):
         tweet_id = reply.json.get("id_str")
         in_reply_to = reply.json.get("in_reply_to_status_id_str")
 
-        original = tweets_by_id[in_reply_to]
+        #original = tweets_by_id[in_reply_to]
 
         classification, scores = classifier.classify(reply.json)
 
