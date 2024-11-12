@@ -202,7 +202,7 @@ def iter_json(text):
         # because raw_decode _still_ doesn't handle it.
         # https://bugs.python.org/issue15393
 
-        m = re.match(r"\s*", text[p:])
+        m = re.match(r"(?:\s|,|\[|\])*", text[p:])
         p += m.end()
 
         start_index = p
