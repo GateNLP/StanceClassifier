@@ -188,21 +188,34 @@ def iter_json(text):
 
     JSON documents in the input can be separated from each other
     with whitespace, or nothing at all.
+
+    If the text content does not start with a valid JSON object,
+    then we assume that the whole text is instead the plain text
+    content of a single reply, and synthesize a response
+    accordingly.
     """
 
     p = 0
+    found_json = False
     while True:
         # Skip initial whitespace,
         # because raw_decode _still_ doesn't handle it.
         # https://bugs.python.org/issue15393
 
-        m = re.match(r"\s*", text[p:])
+        m = re.match(r"(?:\s|,|\[|\])*", text[p:])
         p += m.end()
 
         start_index = p
 
+        # We only care about JSON _objects_, if there is another type of
+        # JSON value starting here (number, string literal, boolean, null or
+        # array) then give up.
+        if text[p:p+1] != "{":
+            break
+
         try:
             a_json, length = JSON.raw_decode(text[p:])
+            found_json = True
         except json.decoder.JSONDecodeError:
             break
 
@@ -211,6 +224,25 @@ def iter_json(text):
         end_index = p
 
         yield EmbeddedJSON(a_json, start_index, end_index)
+
+    if not found_json:
+        trimmed_text = text.lstrip()
+        text_start = len(text) - len(trimmed_text)
+        trimmed_text = trimmed_text.rstrip()
+        if not trimmed_text:
+            return
+
+        # We didn't find any JSON, but we did find some plain text,
+        # so treat that as a single reply post to a dummy target
+        yield EmbeddedJSON(
+            {
+                "text": trimmed_text,
+                "id_str": "1",
+                "in_reply_to_status_id_str": "0"
+            },
+            text_start,
+            text_start + len(trimmed_text),
+        )
 
 def structured_json(texts_list):
     """
