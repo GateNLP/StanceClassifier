@@ -9,16 +9,18 @@ from transformers import AutoTokenizer
 import json
 import glob
 import re
-from StanceClassifier.util import Util, path_from_root
 import emoji
 from nltk.tokenize import TweetTokenizer
 import string
 
-class Features():
+class Features:
 
-    def __init__(self, tokenizer_PATH):
+    def __init__(self, tokenizer_PATH, tokenizer_kwargs=None, demojize=False):
+        if tokenizer_kwargs is None:
+            tokenizer_kwargs = {}
     
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_PATH)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_PATH, **tokenizer_kwargs)
+        self.demojize = demojize
     
     def process_tweet_dict(self, tweet_dict):
 
@@ -34,13 +36,26 @@ class Features():
         text = re.sub(r"@\w+", "@user", text, flags=FLAGS)
         text_token = tknzr.tokenize(text)
         text = " ".join(text_token)
+
+        if self.demojize:
+            text = emoji.demojize(text)
         
         return text
     
-    def extract_bert_input(self, reply_tweet_dict):
-       
-        r_text = self.process_tweet_dict(reply_tweet_dict)
-        
+    def extract_bert_input(self, tweet_dict, text_pair=None):
+        """
+        Preprocess and tokenize the given tweet dict ready for the stance model.
+
+        :param tweet_dict: the tweet to process
+        :param text_pair: optional supplementary text to send to the tokenizer.  Typically this
+                will be omitted in the target-oblivious case, or when encoding just the reply tweet,
+                or it will be the text returned when preprocessing the reply, when preparing the
+                original tweet (the target to which it is replying) in a target-aware scenario.
+        :return: tuple with the encoded result of this tweet ready to pass to the model, and the
+                preprocessed text that could be passed as text_pair to encode the next tweet in the chain.
+        """
+        text = self.process_tweet_dict(tweet_dict)
+
         # input of target-oblivious model
-        encoded_reply = self.tokenizer(text=r_text, add_special_tokens=True, truncation=True, padding='max_length', max_length = 128, return_tensors="pt")
-        return encoded_reply
+        encoded = self.tokenizer(text=text, text_pair=text_pair, add_special_tokens=True, truncation=True, padding='max_length', max_length = 128, return_tensors="pt")
+        return encoded, text

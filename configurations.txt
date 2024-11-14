@@ -1,4 +1,0 @@
-local_server_hostname|||localhost
-local_server_port|||7171
-main_server_port|||7272
-model|||lr
