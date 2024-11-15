@@ -1,6 +1,8 @@
 # StanceClassifier
 Stance Classifier for the WeVerify project, to determine the stance (support, deny, question, comment) of a "reply" tweet or other social media post towards the original "target" post to which it is replying.
 
+> This is the latest version of the classifier, with target-aware and target-oblivious models based on BERTweet and XLM-RoBERTa.  For the older multilingual BERT-based models see the [bert-model branch](https://github.com/GateNLP/StanceClassifier/tree/bert-model)
+
 ## Available models
 
 There are two versions of the stance classifier available:
