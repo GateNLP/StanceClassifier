@@ -1,7 +1,6 @@
 import os
 import json
 import sys
-from joblib import load
 import numpy as np
 from .features.extract_features import Features
 from .testing import test

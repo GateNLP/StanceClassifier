@@ -1,5 +1,4 @@
 import numpy as np
-from transformers import AutoModelForSequenceClassification
 import torch
 from scipy.special import softmax
 

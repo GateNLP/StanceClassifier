@@ -2,10 +2,6 @@ nltk
 numpy
 scipy
 scikit_learn==1.5.2
-joblib
-ktrain==0.41.4
-sortedcontainers
-tensorflow==2.14.1
 flask
 gunicorn
 emoji
