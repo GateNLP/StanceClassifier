@@ -11,11 +11,13 @@ from transformers import AutoModelForSequenceClassification,AutoTokenizer
 
 class StanceClassifier:
 
-    def __init__(self, model="GateNLP/stance-twitter-xlm-target-oblivious", tokenizer=None):
-        if not tokenizer:
-            tokenizer = model
+    def __init__(self, model="GateNLP/stance-twitter-xlm-target-oblivious", feature_extractor=None):
+        if not feature_extractor:
+            # Create a plain Features() instance loading its tokenizer from
+            # the same place as the model
+            feature_extractor = Features(model)
 
-        self.feature_extractor = Features(tokenizer)
+        self.feature_extractor = feature_extractor
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=4)
         
     
@@ -34,8 +36,11 @@ class StanceClassifierEnsemble(StanceClassifier):
     the same pair of posts and returns whichever prediction is more confident.
     """
 
-    def __init__(self, to_model="GateNLP/stance-bertweet-target-oblivious", ta_model="GateNLP/stance-bertweet-target-aware", tokenizer=None):
-        super().__init__(to_model, tokenizer)
+    def __init__(self, to_model="GateNLP/stance-bertweet-target-oblivious", ta_model="GateNLP/stance-bertweet-target-aware", feature_extractor=None):
+        if not feature_extractor:
+            feature_extractor = Features(to_model, tokenizer_kwargs={"use_fast": False}, demojize=True)
+
+        super().__init__(to_model, feature_extractor)
         self.ta_model = AutoModelForSequenceClassification.from_pretrained(ta_model, num_labels=4)
 
 
