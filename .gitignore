@@ -3,6 +3,6 @@ resources/
 resources.tar.gz
 models/
 models.tar.gz
+extra-models/
 __pycache__/
 training/models/
-*.pyc

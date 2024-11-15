@@ -33,7 +33,7 @@ The folder `examples` contains examples of original tweets and replies:
 
 ### Programmatic usage
 
-The project provides two main classes, `StanceClassifer` for target-oblivious stance detection and `StanceClassifierEnsemble` for the target-aware ensemble model.  Both classes can be imported `from StanceClassifier.stance_classifier`, and will download their models from HuggingFace on first use.
+The project provides three main classes, `StanceClassifer` for target-oblivious stance detection and `StanceClassifierEnsemble` for the target-aware ensemble model, plus `StanceClassifierWithTarget` that uses _only_ the target-aware model.  All these classes can be imported `from StanceClassifier.stance_classifier`, and will download their models from HuggingFace on first use.
 
 ### Server usage
 

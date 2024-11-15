@@ -2,6 +2,7 @@
 # deny = 1
 # query = 2
 # comment = 3
+import functools
 
 import numpy as np
 from transformers import AutoTokenizer
@@ -19,8 +20,13 @@ class Features:
             tokenizer_kwargs = {}
     
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_PATH, **tokenizer_kwargs)
+        # Wrap the tokenizer in an LRU cache so we don't need to re-tokenize the reply text
+        # twice when running in ensemble mode
+        self.tokenizer = functools.lru_cache(maxsize=10)(self.tokenizer)
         self.demojize = demojize
-    
+        self.nltk_tokenizer = TweetTokenizer()
+
+
     def process_tweet_dict(self, tweet_dict):
 
         if "text" not in tweet_dict.keys():
@@ -29,11 +35,10 @@ class Features:
             text = tweet_dict["text"]
         
         
-        tknzr = TweetTokenizer()
         FLAGS = re.MULTILINE | re.DOTALL
         text = re.sub(r"https?:\/\/\S+\b|www\.(\w+\.)+\S*", "http", text, flags=FLAGS)
         text = re.sub(r"@\w+", "@user", text, flags=FLAGS)
-        text_token = tknzr.tokenize(text)
+        text_token = self.nltk_tokenizer.tokenize(text)
         text = " ".join(text_token)
 
         if self.demojize:

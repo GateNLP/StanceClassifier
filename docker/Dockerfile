@@ -27,20 +27,41 @@ WORKDIR /elg
 # torch can cache it's downloads in the normal place
 RUN --mount=type=cache,target=/elg/.pip-cache,uid=1001 python -mvenv venv && venv/bin/pip --cache-dir /elg/.pip-cache install -r requirements.txt
 
-COPY StanceClassifier /elg/StanceClassifier
-COPY docker/elg_stance.py docker/docker-entrypoint.sh /elg/
+COPY --chown=1001:1001 StanceClassifier /elg/StanceClassifier
+COPY --chown=1001:1001 docker/elg_stance.py docker/docker_classifier.py docker/docker-entrypoint.sh /elg/
+
+# copy in any extra models from the context, which can subsequently be referenced as
+# ./extra-models/<name> in the build args.  The [s] is a trick so that this instruction
+# won't fail if (as in the default case) no such extra models exist.
+COPY --chown=1001:1001 docker/extra-model[s] /elg/extra-models
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
 FROM base as oblivious
 
-# Run one classify, to pre-cache any download-on-first-use things
-RUN ["venv/bin/python", "-c", "from StanceClassifier.stance_classifier import StanceClassifier\nStanceClassifier().classify({'text':'reply'})"]
+ARG MODEL=default
+ENV STANCE_CLASSIFIER_MODE=oblivious STANCE_CLASSIFIER_OBLIVIOUS_MODEL=$MODEL
 
-ENV WORKERS=1 REQUEST_SIZE_LIMIT=100000 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 STANCE_CLASSIFIER_MODE=oblivious
+# Run one classify, to pre-cache any download-on-first-use things
+RUN ["venv/bin/python", "-c", "from docker_classifier import classifier\nclassifier.classify({'text':'reply'})"]
+
+ENV WORKERS=1 REQUEST_SIZE_LIMIT=100000 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
 
 FROM base as aware
 
-RUN ["venv/bin/python", "-c", "from StanceClassifier.stance_classifier import StanceClassifierEnsemble\nStanceClassifierEnsemble().classify_with_target({'text':'reply', 'id_str':'2', 'in_reply_to_status_id_str':'1'}, {'text':'orig', 'id_str':'1'})"]
+ARG MODEL=default
+ENV STANCE_CLASSIFIER_MODE=aware STANCE_CLASSIFIER_AWARE_MODEL=$MODEL
 
-ENV WORKERS=1 REQUEST_SIZE_LIMIT=100000 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 STANCE_CLASSIFIER_MODE=aware
+RUN ["venv/bin/python", "-c", "from docker_classifier import classifier\nclassifier.classify_with_target({'text':'reply', 'id_str':'2', 'in_reply_to_status_id_str':'1'}, {'text':'orig', 'id_str':'1'})"]
+
+ENV WORKERS=1 REQUEST_SIZE_LIMIT=100000 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
+
+FROM base as ensemble
+
+ARG MODEL_TO=default
+ARG MODEL_TA=default
+ENV STANCE_CLASSIFIER_MODE=ensemble STANCE_CLASSIFIER_OBLIVIOUS_MODEL=$MODEL_TO STANCE_CLASSIFIER_AWARE_MODEL=$MODEL_TA
+
+RUN ["venv/bin/python", "-c", "from docker_classifier import classifier\nclassifier.classify_with_target({'text':'reply', 'id_str':'2', 'in_reply_to_status_id_str':'1'}, {'text':'orig', 'id_str':'1'})"]
+
+ENV WORKERS=1 REQUEST_SIZE_LIMIT=100000 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1

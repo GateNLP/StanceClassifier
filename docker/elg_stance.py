@@ -30,7 +30,7 @@ import json
 import re
 import warnings
 
-from StanceClassifier.stance_classifier import StanceClassifier, StanceClassifierEnsemble
+from docker_classifier import oblivious_mode, classifier
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -38,16 +38,11 @@ app.config["JSON_SORT_KEYS"] = False
 # Take plain text post size limit from env
 size_limit = int(os.environ.get('REQUEST_SIZE_LIMIT', 50000))
 
-# STANCE_CLASSIFIER_MODE should be set to "oblivious" for target-oblivious mode or "aware" for target-aware mode
-oblivious_mode = (os.environ.get("STANCE_CLASSIFIER_MODE", "oblivious") == "oblivious")
-
 class EmbeddedJSON(collections.namedtuple("EmbeddedTweet", "json begin end")):
     """
     This class is a loaded JSON object (at .json) associated
     with .begin and .end offsets within the string whence it was parsed.
     """
-
-classifier = StanceClassifier() if oblivious_mode else StanceClassifierEnsemble()
 
 JSON = json.JSONDecoder()
 
