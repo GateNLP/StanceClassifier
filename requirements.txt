@@ -6,5 +6,7 @@ flask
 gunicorn
 emoji
 protobuf==3.20.*
-torch==2.5.1
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1+cpu; sys_platform != "darwin" and platform_machine != "aarch64"
+torch==2.5.1; sys_platform == "darwin" or platform_machine == "aarch64"
 transformers==4.46.2
