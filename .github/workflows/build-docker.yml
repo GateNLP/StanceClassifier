@@ -1,0 +1,74 @@
+name: build-docker.yml
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Buildx cache
+        uses: actions/cache@v4
+        with:
+          path: buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('buildx-cache/**') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Docker meta (oblivious)
+        id: metaOblivious
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/gatenlp/stance-target-oblivious
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Docker meta (aware)
+        id: metaAware
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/gatenlp/stance-target-aware
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push target-oblivious
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          target: oblivious
+          push: true
+          tags: ${{ steps.metaOblivious.outputs.tags }}
+          labels: ${{ steps.metaOblivious.outputs.labels }}
+          cache-from: type=local,src=buildx-cache
+          cache-to: type=local,dest=buildx-cache-out,mode=max
+          platforms: linux/amd64
+
+      - name: Build and push target-aware
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          target: ensemble
+          push: true
+          tags: ${{ steps.metaAware.outputs.tags }}
+          labels: ${{ steps.metaAware.outputs.labels }}
+          cache-from: type=local,src=buildx-cache
+          platforms: linux/amd64
+
+      - name: Clean up cache
+        run: rm -rf buildx-cache && mv buildx-cache-out buildx-cache
