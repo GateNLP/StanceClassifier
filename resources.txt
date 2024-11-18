@@ -1,2 +1,0 @@
-model|||models/reply-only_english/Twitter-XLM
-tokenizer|||models/reply-only_english/tokenizer

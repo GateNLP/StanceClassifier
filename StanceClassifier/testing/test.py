@@ -1,5 +1,4 @@
 import numpy as np
-from transformers import AutoModelForSequenceClassification
 import torch
 from scipy.special import softmax
 
@@ -23,9 +22,9 @@ def predict_bertweet(encoded_reply, model):
     return stance_prob, stance_prediction
 
 def process_model_output(output_): 
-    # input: logits of output_TO and output_TA;
+    # input: logits of output_
 
-    id2label = {0:"support", 1:"deny", 2:"query", 3:"comment"}
+    #id2label = {0:"support", 1:"deny", 2:"query", 3:"comment"}
     output_ = softmax(output_) # transform logits
     ranking_ = np.argsort(output_)[::-1] # rank
     #return output_[ranking_[0]], id2label[ranking_[0]] 

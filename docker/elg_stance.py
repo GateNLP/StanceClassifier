@@ -30,7 +30,7 @@ import json
 import re
 import warnings
 
-from StanceClassifier.stance_classifier import StanceClassifier
+from docker_classifier import oblivious_mode, classifier
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -43,8 +43,6 @@ class EmbeddedJSON(collections.namedtuple("EmbeddedTweet", "json begin end")):
     This class is a loaded JSON object (at .json) associated
     with .begin and .end offsets within the string whence it was parsed.
     """
-
-classifier = StanceClassifier()
 
 JSON = json.JSONDecoder()
 
@@ -133,9 +131,12 @@ def process(twt_source):
         tweet_id = reply.json.get("id_str")
         in_reply_to = reply.json.get("in_reply_to_status_id_str")
 
-        #original = tweets_by_id[in_reply_to]
+        if oblivious_mode:
+            classification, scores = classifier.classify(reply.json)
+        else:
+            original = tweets_by_id[in_reply_to]
+            classification, scores = classifier.classify_with_target(reply.json, original.json)
 
-        classification, scores = classifier.classify(reply.json)
 
         features = stance_classification_as_features(classification, scores)
         # Add ID and reply features, if they are not auto-generated IDs
@@ -146,8 +147,6 @@ def process(twt_source):
 
         annot = {"start": reply.begin, "end": reply.end, "features": features}
         annotations.setdefault("Stance", []).append(annot)
-
-    print(annotations)
 
     return dict(response = { 'type':'annotations', 'annotations':annotations,  })
 
@@ -225,7 +224,7 @@ def iter_json(text):
 
         yield EmbeddedJSON(a_json, start_index, end_index)
 
-    if not found_json:
+    if not found_json and oblivious_mode:
         trimmed_text = text.lstrip()
         text_start = len(text) - len(trimmed_text)
         trimmed_text = trimmed_text.rstrip()
@@ -237,8 +236,8 @@ def iter_json(text):
         yield EmbeddedJSON(
             {
                 "text": trimmed_text,
-                "id_str": "1",
-                "in_reply_to_status_id_str": "0"
+                "id_str": "gen:1",
+                "in_reply_to_status_id_str": "gen:0"
             },
             text_start,
             text_start + len(trimmed_text),
